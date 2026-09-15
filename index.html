@@ -1,0 +1,377 @@
+```html
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Ark Café & Lounge - Digital Menu</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Cairo & Playfair Display -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', 'Montserrat', sans-serif;
+            background-color: #0d1117;
+            color: #e6edd8;
+        }
+        .gold-gradient {
+            background: linear-gradient(135deg, #d4af37 0%, #f3e5ab 50%, #aa7c11 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gold-bg {
+            background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+        }
+        .gold-border {
+            border-color: #d4af37;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .card-glass {
+            background: rgba(22, 27, 34, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+        }
+        .card-glass:hover {
+            border-color: rgba(212, 175, 55, 0.5);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="pb-12 min-h-screen">
+
+    <!-- Header Section -->
+    <header class="sticky top-0 z-40 bg-[#0d1117]/90 backdrop-blur-md border-b border-[#d4af37]/20 px-4 py-4">
+        <div class="max-w-4xl mx-auto flex flex-col items-center">
+            <!-- Logo area -->
+            <div class="flex items-center space-x-3 space-x-reverse mb-1">
+                <i class="fa-solid fa-anchor text-2xl text-[#d4af37]"></i>
+                <h1 class="text-3xl font-extrabold tracking-wider gold-gradient font-['Montserrat']">THE ARK</h1>
+            </div>
+            <p class="text-xs text-gray-400 tracking-widest font-['Montserrat'] uppercase mb-3">Café & Lounge</p>
+
+            <!-- Search Bar -->
+            <div class="w-full relative max-w-md">
+                <input type="text" id="searchInput" onkeyup="filterMenu()" 
+                       placeholder="ابحث عن مشروبك أو الحلوى المفضل..." 
+                       class="w-full bg-[#161b22] border border-[#d4af37]/30 text-sm text-gray-200 rounded-full py-2 px-10 focus:outline-none focus:border-[#d4af37] transition-all">
+                <i class="fa-solid fa-magnifying-glass absolute right-3.5 top-3 text-gray-400 text-sm"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Categories Navigation Bar -->
+    <nav class="sticky top-[120px] z-30 bg-[#0d1117] border-b border-gray-800 py-3 shadow-lg">
+        <div class="max-w-4xl mx-auto px-4">
+            <div id="categoryTabs" class="flex space-x-2 space-x-reverse overflow-x-auto hide-scrollbar py-1">
+                <!-- JS Populated Category Badges -->
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="max-w-4xl mx-auto px-4 pt-6 space-y-8">
+
+        <!-- Banner Announcement -->
+        <div class="bg-gradient-to-r from-[#1c1917] via-[#292524] to-[#1c1917] border border-[#d4af37]/40 rounded-2xl p-4 flex items-center justify-between shadow-xl">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="w-10 h-10 rounded-full gold-bg flex items-center justify-center text-black font-bold">
+                    <i class="fa-solid fa-mug-hot text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-white">أهلاً بكم في ذا أرك كافيه</h3>
+                    <p class="text-xs text-gray-400">تصفح أصناف المنيو مع صور واقعية بجودة عالية</p>
+                </div>
+            </div>
+            <span class="text-xs bg-[#d4af37]/20 text-[#d4af37] px-3 py-1 rounded-full font-bold border border-[#d4af37]/40">المنيو الرقمي</span>
+        </div>
+
+        <!-- Menu Grid Container -->
+        <div id="menuContainer" class="space-y-10">
+            <!-- Content render by JS -->
+        </div>
+
+    </main>
+
+    <!-- Modal for Full Image Preview -->
+    <div id="imageModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4 transition-opacity duration-300" onclick="closeModal()">
+        <div class="relative max-w-md w-full bg-[#161b22] rounded-2xl overflow-hidden border border-[#d4af37]/40 shadow-2xl" onclick="event.stopPropagation()">
+            <button onclick="closeModal()" class="absolute top-3 left-3 z-10 w-9 h-9 bg-black/60 text-white rounded-full flex items-center justify-center hover:bg-black transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <img id="modalImage" src="" alt="" class="w-full h-64 object-cover">
+            <div class="p-5">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 id="modalTitle" class="text-xl font-bold text-white"></h3>
+                    <span id="modalPrice" class="text-lg font-bold text-[#d4af37]"></span>
+                </div>
+                <p id="modalCategory" class="text-xs text-[#d4af37]/80 uppercase font-semibold mb-2"></p>
+                <p id="modalDesc" class="text-sm text-gray-300 leading-relaxed"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-16 border-t border-gray-800 text-center py-6 text-gray-500 text-xs">
+        <p class="mb-1">جميع الحقوق محفوظة © 2026 - <span class="gold-gradient font-bold">The Ark Café</span></p>
+        <p class="text-gray-600">منيو رقمي سريع عبر QR Code</p>
+    </footer>
+
+    <!-- JavaScript Data and Rendering Engine -->
+    <script>
+        const fallbackImage = 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=600&auto=format&fit=crop';
+
+        const menuData = [
+            {
+                category: "Coffee (قهوة ساخنة)",
+                id: "coffee",
+                icon: "fa-mug-saucer",
+                items: [
+                    { name: "Turkish Coffee", price: "30 / 40 LE", desc: "قهوة تركي مظبوطة ومصنوعة بعناية باختيارك سينجل أو دبل", img: "https://images.unsplash.com/photo-1578314675249-a6910f80cc4e?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Espresso", price: "30/ 40 LE", desc: "إسبريسو غني بنكهة القهوة المركزة الأوريجينال", img: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Macchiato", price: "40 / 45 LE", desc: "إسبريسو مضاف إليه لمسة من رغوة الحليب الناعمة", img: "https://images.unsplash.com/photo-1485808191679-5f86510681a2?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Cappuccino", price: "60 LE", desc: "كابوتشينو كلاسيكي برغوة غنية وطعم متوازن", img: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Caffè Latte", price: "50 LE", desc: "قهوة إسبريسو مع حليب مبخر وطبقة خفيفة من الفوم", img: "https://images.unsplash.com/photo-1534778101976-62847782c213?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Caffè Mocha", price: "70 LE", desc: "مزيج الإسبريسو الرائع مع الشوكولاتة الغنية والحليب", img: "https://images.unsplash.com/photo-1578314675249-a6910f80cc4e?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Flat White", price: "65 LE", desc: "إسبريسو مزود بـ Microfoam كريمي ونقي", img: "https://images.unsplash.com/photo-1577968897966-3d4325b36b61?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Affogato", price: "50 LE", desc: "بولات آيس كريم فانيليا مغطاة بجرعة إسبريسو ساخن", img: "https://images.unsplash.com/photo-1592663527359-cf6642f54cff?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Espresso Con Panna", price: "50 LE", desc: "إسبريسو غني يعلوه الكريمة المخفوقة الفاخرة", img: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Cortado", price: "50 LE", desc: "نسبة متساوية تماماً بين الإسبريسو والحليب الدافئ", img: "https://images.unsplash.com/photo-1534778101976-62847782c213?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Americano", price: "35 LE", desc: "إسبريسو خفيف مخفف بالماء الساخن بنكهة ممتازة", img: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Nescafe Milk", price: "35 LE", desc: "نسكافيه بحليب رغوي لمريدي الطعم الكلاسيكي", img: "https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=600&auto=format&fit=crop" },
+                    { name: "French Coffee", price: "40 LE", desc: "قهوة فرنسية محوجة بالحليب ولذيذة", img: "https://images.unsplash.com/photo-1517256064527-09c73fc73e38?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Hazelnut Coffee", price: "40 LE", desc: "قهوة ممزوجة بنكهة البندق الزكية", img: "https://images.unsplash.com/photo-1497636577773-f1231844b336?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Nutella Coffee", price: "55 LE", desc: "قهوة ساحرة مضاف إليها شوكولاتة النوتلا الأصيلة", img: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Caramel Macchiato", price: "70 LE", desc: "إسبريسو مع الحليب وصوص الكراميل اللذيذ", img: "https://images.unsplash.com/photo-1485808191679-5f86510681a2?q=80&w=600&auto=format&fit=crop" }
+                ]
+            },
+            {
+                category: "Ice Coffee (قهوة مثلجة)",
+                id: "ice-coffee",
+                icon: "fa-glass-water-droplet",
+                items: [
+                    { name: "Frappuccino", price: "60 LE", desc: "فرابوتشينو مثلج ومخفوق بعناية لإنعاشك في أي وقت", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Frappuccino Choco", price: "70 LE", desc: "فرابوتشينو غني بصوص وتوبينج الشوكولاتة", img: "https://images.unsplash.com/photo-1579888926999-290247217981?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Frappuccino Caramel", price: "70 LE", desc: "فرابوتشينو مع الكراميل الغني والكريمة", img: "https://images.unsplash.com/photo-1662047102608-a6f2e492411f?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Spanish Latte", price: "65 LE", desc: "سبانيش لاتيه مثلج ومميز بالحليب المكثف المحلى", img: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Iced Latte", price: "50 LE", desc: "آيس لاتيه كلاسيكي منعش مع قطع الثلج", img: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Iced Caramel Macchiato", price: "70 LE", desc: "مزيج الإسبريسو والثلج مع رشة كراميل رائعة", img: "https://images.unsplash.com/photo-1662047102608-a6f2e492411f?q=80&w=600&auto=format&fit=crop" }
+                ]
+            },
+            {
+                category: "Cocktails (كوكتيلات جديدة)",
+                id: "cocktails",
+                icon: "fa-cocktail",
+                items: [
+                    { name: "Piña Colada", price: "75 LE", desc: "مزيج الاستوائي الرائع من الأناناس وجوز الهند", isNew: true, img: "https://images.unsplash.com/photo-1617728273800-1e615ab03037?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+                    { name: "Peachy Mango", price: "60 LE", desc: "خلطة الفراولة المانجو والخوخ الطبيعي", isNew: true, img: "https://images.unsplash.com/photo-1536935338788-846bb9981813?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Passion Mango", price: "60 LE", desc: "مزيج الباشون فروت مع المانجو المنعش", isNew: true, img: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Banana Straw", price: "70 LE", desc: "كوكتيل الموز الطبيعي المخفوق مع الفراولة", isNew: true, img: "https://images.unsplash.com/photo-1553530666-ba11a7da3888?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Banana Milk", price: "60 LE", desc: "موز بالحليب الطبيعي وطعم غني للغاية", isNew: true, img: "https://images.unsplash.com/photo-1528498033373-3c6c08e93d79?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Yogurt Fruit", price: "75 LE", desc: "زبادي مع فواكه الموسم الطازجة الصحية", isNew: true, img: "https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Yogurt Honey", price: "55 LE", desc: "زبادي طبيعي مع عسل النحل النقي", isNew: true, img: "https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=600&auto=format&fit=crop" }
+                ]
+            },
+            {
+                category: "Milkshake (ميلك شيك)",
+                id: "milkshake",
+                icon: "fa-whiskey-wrapper",
+                items: [
+                    { name: "Bounty Milkshake", price: "90 LE", desc: "ميلك شيك باونتي بجوز الهند والشوكولاتة", isNew: true, img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Vanilla Coconut", price: "75 LE", desc: "مزيج الفانيليا مع نكهة جوز الهند الناعمة", isNew: true, img: "https://images.unsplash.com/photo-1581453883350-288b2c19bea8?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+                    { name: "Oreo Milkshake", price: "75 LE", desc: "ميلك شيك كوكيز الأوريو الغني بقطع البسكويت", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Snickers Milkshake", price: "90 LE", desc: "شوكولاتة سنيكرز مع الفول السوداني والكراميل", img: "https://media.istockphoto.com/id/1425895300/photo/snickers-milkshake-served-in-glass-side-view-on-wooden-table-morning-meal.jpg?s=2048x2048&w=is&k=20&c=ZXlgl28sF84Hk14dfJXIyRJa1gTKz-eNU5UXnKWH9xo=" },
+                    { name: "Kitkat Milkshake", price: "90 LE", desc: "ميلك شيك الكتكات المقرمش والشهي", img: "https://images.unsplash.com/photo-1714799263245-4fc7cc21911e?q=80&w=1099&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+                    { name: "Kinder Milkshake", price: "90 LE", desc: "ميلك شيك شوكولاتة كيندر بالحليب الفاخر", img: "https://images.unsplash.com/photo-1579888926999-290247217981?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Vanilla Milkshake", price: "60 LE", desc: "ميلك شيك فانيليا كلاسيكي ولذيذ", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Chocolate Milkshake", price: "60 LE", desc: "ميلك شيك شوكولاتة كثيف وممتع", img: "https://images.unsplash.com/photo-1579888926999-290247217981?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Strawberry Milkshake", price: "60 LE", desc: "ميلك شيك الفراولة الطبيعية اللذيذة", img: "https://images.unsplash.com/photo-1553530666-ba11a7da3888?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Mango Milkshake", price: "60 LE", desc: "ميلك شيك المانجو الاستوائي الطازج", img: "https://images.unsplash.com/photo-1536935338788-846bb9981813?q=80&w=600&auto=format&fit=crop" }
+                ]
+            },
+            {
+                category: "Fresh Juice & Smoothies (عصائر وسموذي)",
+                id: "juices",
+                icon: "fa-lemon",
+                items: [
+                    { name: "Lemon Mint Juice", price: "45 LE", desc: "ليمون نعناع منعش ومثلج ممتاز للصيف", img: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Mango Fresh Juice", price: "50 LE", desc: "عصير مانجو طبيعي 100% بدون إضافات", img: "https://images.unsplash.com/photo-1546173159-315724a31696?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Strawberry Juice", price: "50 LE", desc: "عصير فراولة طبيعي طازج بقطع الفاكهة", img: "https://images.unsplash.com/photo-1553530666-ba11a7da3888?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Peach Smoothie", price: "50 LE", desc: "سموذي الخوخ اللذيذ بقوام ثقيل ومثلج", img: "https://images.unsplash.com/photo-1536935338788-846bb9981813?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Pineapple Smoothie", price: "50 LE", desc: "سموذي أناناس استوائي بمذاق رائع", img: "https://images.unsplash.com/photo-1604298331663-de303fbc7059?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" }
+                ]
+            },
+            {
+                category: "Mojito (موهيتو)",
+                id: "mojito",
+                icon: "fa-[#0d1117]",
+                items: [
+                    { name: "Mint Mojito", price: "50 LE", desc: "موهيتو بالنعناع الطازج مع الصودا وشرائح الليمون", img: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Strawberry Mojito", price: "50 LE", desc: "موهيتو الفراولة المنعش والصودا المثلجة", img: "https://images.unsplash.com/photo-1553530666-ba11a7da3888?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Blueberry Mojito", price: "50 LE", desc: "موهيتو التوت الأزرق الرائع والصودا الفوارة", img: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?q=80&w=600&auto=format&fit=crop" }
+                ]
+            },
+            {
+                category: "Desserts (حلويات فاخرة)",
+                id: "desserts",
+                icon: "fa-cake-candles",
+                items: [
+                    { name: "Tiramisu", price: "75 LE", desc: "تيراميسو إيطالي أصلي بنكهة القهوة الفاخرة", isNew: true, img: "https://images.unsplash.com/photo-1708175313814-679cb8e90d2e?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+                    { name: "Tagen Waffle", price: "75 LE", desc: "طاجن وافل ساخن غارق في الشوكولاتة والصوصات", isNew: true, img: "https://images.unsplash.com/photo-1685166836342-bfab63e8a095?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+                    { name: "Uom Ali", price: "60 LE", desc: "أم علي ساخنة بالسمن البلدي والمكسرات والقشطة", isNew: true, img: "https://images.unsplash.com/photo-1630859885691-967800725d49?q=80&w=736&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+                    { name: "Waffle Wiche", price: "105 LE", desc: "ساندوتش وافل محشو بالآيس كريم والصوص المميز", img: "https://images.unsplash.com/photo-1562376552-0d160a2f238d?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Cinnabon", price: "50 LE", desc: "سينابون دافئ بصوص القرفة والمكسرات والكريمة", img: "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Honeycake", price: "50 LE", desc: "كيكة العسل الروسية بطبقاتها الناعمة الهشة", img: "https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Cheesecake", price: "50 LE", desc: "تشيز كيك كريمي مع صوص التوت أو الفراولة", img: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Molten Cake", price: "80 LE", desc: "مولتن كيك محشو بالشوكولاتة السائلة مع آيس كريم", img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Chocolate Brownies", price: "80 LE", desc: "قطع براونيز الشوكولاتة الغنية الداكنة", img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Tagen Nutella", price: "75 LE", desc: "طاجن نوتلا ساخن ولذيذ لعشاق النوتلا", img: "https://images.unsplash.com/photo-1695304781788-2ae3f1b02ccc?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" }
+                ]
+            },
+            {
+                category: "Ice Cream (آيس كريم)",
+                id: "ice-cream",
+                icon: "fa-ice-cream",
+                items: [
+                    { name: "Vanilla Scoop", price: "20 / 40 LE", desc: "آيس كريم فانيليا طبيعي سينجل أو دبل بولة", img: "https://images.unsplash.com/photo-1570197788417-0e82375c9371?q=80&w=600&auto=format&fit=crop" },
+                    { name: "Chocolate Scoop", price: "20 / 40 LE", desc: "آيس كريم شوكولاتة غني ومميز", img: "https://images.unsplash.com/photo-1620197544618-af5f5366abb3?q=80&w=1025&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+                    { name: "Oreo Ice Cream", price: "20 / 40 LE", desc: "آيس كريم ممزوج بقطع الأوريو المقرمشة", img: "https://plus.unsplash.com/premium_photo-1776973055738-fd36dece8ee0?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+                    {name: "Strawberry Scoop", price: "20 / 40 LE", desc: "آيس كريم فراولة طبيعي ومنعش", img: "https://images.unsplash.com/photo-1532678465554-94846274c297?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+                    {name: "Mango Scoop", price: "20 / 40 LE", desc: "آيس كريم مانجو استوائي لذيذ", img: "https://plus.unsplash.com/premium_photo-1724255862353-c6bc210e3d63?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+
+                ] 
+
+            }
+        ];
+
+        // Render Tabs
+        function renderTabs() {
+            const container = document.getElementById('categoryTabs');
+            container.innerHTML = menuData.map((cat, idx) => `
+                <button onclick="scrollToCategory('${cat.id}', this)" 
+                        class="tab-btn px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-300 border ${idx === 0 ? 'gold-bg text-black border-[#d4af37]' : 'bg-[#161b22] text-gray-300 border-gray-700 hover:border-[#d4af37]'}">
+                    <i class="fa-solid ${cat.icon} ml-1.5 text-xs"></i>
+                    ${cat.category}
+                </button>
+            `).join('');
+        }
+
+        // Render Menu Content
+        function renderMenu(dataToRender = menuData) {
+            const container = document.getElementById('menuContainer');
+            if(dataToRender.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-gray-500">
+                        <i class="fa-solid fa-mug-hot text-4xl mb-3 text-gray-600"></i>
+                        <p class="text-sm">لم نجد أي مشروب أو حلوى بهذا الاسم</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = dataToRender.map(cat => `
+                <section id="${cat.id}" class="scroll-mt-36">
+                    <div class="flex items-center space-x-3 space-x-reverse mb-4 pb-2 border-b border-[#d4af37]/30">
+                        <i class="fa-solid ${cat.icon} text-lg text-[#d4af37]"></i>
+                        <h2 class="text-lg font-bold text-white tracking-wide">${cat.category}</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        ${cat.items.map(item => `
+                            <div onclick="openModal('${item.name}', '${item.price}', '${item.desc}', '${item.img}', '${cat.category}')" 
+                                 class="card-glass rounded-xl p-3 flex space-x-3 space-x-reverse cursor-pointer transition-all duration-300 group">
+                                <div class="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-gray-900 border border-gray-800">
+                                    <img src="${item.img}" alt="${item.name}" 
+                                         onerror="this.src='${fallbackImage}'"
+                                         class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                                    ${item.isNew ? '<span class="absolute top-1 right-1 gold-bg text-black text-[9px] font-extrabold px-1.5 py-0.5 rounded">NEW</span>' : ''}
+                                </div>
+                                <div class="flex-1 flex flex-col justify-between py-0.5">
+                                    <div>
+                                        <div class="flex justify-between items-start mb-1">
+                                            <h3 class="font-bold text-sm text-gray-100 group-hover:text-[#d4af37] transition">${item.name}</h3>
+                                            <span class="text-xs font-bold text-[#d4af37] bg-[#d4af37]/10 px-2 py-0.5 rounded border border-[#d4af37]/20">${item.price}</span>
+                                        </div>
+                                        <p class="text-xs text-gray-400 line-clamp-2 leading-relaxed">${item.desc}</p>
+                                    </div>
+                                    <div class="flex items-center text-[11px] text-[#d4af37]/80 font-medium">
+                                        <span>اضغط للتكبير والتفاصيل</span>
+                                        <i class="fa-solid fa-chevron-left text-[9px] mr-1"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </section>
+            `).join('');
+        }
+
+        // Filter Menu by Search Input
+        function filterMenu() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            if (!query) {
+                renderMenu(menuData);
+                return;
+            }
+
+            const filtered = menuData.map(cat => {
+                const matchingItems = cat.items.filter(item => 
+                    item.name.toLowerCase().includes(query) || 
+                    item.desc.toLowerCase().includes(query)
+                );
+                return matchingItems.length > 0 ? { ...cat, items: matchingItems } : null;
+            }).filter(Boolean);
+
+            renderMenu(filtered);
+        }
+
+        // Scroll to category smoothly
+        function scrollToCategory(catId, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('gold-bg', 'text-black');
+                b.classList.add('bg-[#161b22]', 'text-gray-300');
+            });
+            btn.classList.remove('bg-[#161b22]', 'text-gray-300');
+            btn.classList.add('gold-bg', 'text-black');
+
+            const target = document.getElementById(catId);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Open Modal
+        function openModal(name, price, desc, img, category) {
+            document.getElementById('modalTitle').innerText = name;
+            document.getElementById('modalPrice').innerText = price;
+            document.getElementById('modalDesc').innerText = desc;
+            document.getElementById('modalImage').src = img;
+            document.getElementById('modalCategory').innerText = category;
+            
+            const modal = document.getElementById('imageModal');
+            modal.classList.remove('hidden');
+        }
+
+        // Close Modal
+        function closeModal() {
+            document.getElementById('imageModal').classList.add('hidden');
+        }
+
+        // Initialize on Load
+        window.onload = function() {
+            renderTabs();
+            renderMenu();
+        };
+    </script>
+</body>
+</html>
+
+```
